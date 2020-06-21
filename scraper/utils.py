@@ -1,5 +1,6 @@
 import time
-import os
+import subprocess
+import platform
 import random
 
 from selenium import webdriver
@@ -10,11 +11,19 @@ import config.config as config
 
 def start_webdriver():
     """
-    Configure chrome webdriver & instance it
+    Configure chrome webdriver & instance it.
+    Supports Windows and Raspberry Pi
     :return: webdriver
     """
 
-    os.system('cmd /k "start chrome.exe --profile-directory="Profile 1" --remote-debugging-port=5351 --disable-blink-features=AutomationControlled"')
+    # check if running on windows or Raspberry Pi & use appropriate command to start Chrome
+    system = platform.system()
+    if system == "Windows":
+        subprocess.Popen('cmd /K start chrome.exe --profile-directory="Profile 1" --remote-debugging-port=5351 --disable-blink-features=AutomationControlled"')
+    elif system == "Linux":
+        subprocess.Popen(['lxterminal', '-e', 'google-chrome --profile-directory="Profile 1" --remote-debugging-port=5351 --disable-blink-features=AutomationControlled'])
+    else:
+        raise SystemError("Only Windows and Linux are supported")
 
     options = webdriver.ChromeOptions()
     options.add_experimental_option("debuggerAddress", "127.0.0.1:5351")  # Port numbers should match
